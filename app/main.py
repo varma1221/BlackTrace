@@ -1,13 +1,16 @@
 from fastapi import FastAPI
+
 from app.routes.health import router as health_router
 from app.core.logging_config import logger
+from app.core.middleware import RequestLoggingMiddleware
 
 app = FastAPI(
-        title="BlackTrace",
+        title="BlackTrace API",
         description="AI-Powered Cyber Defence and Threat Hunting System",
         version="0.1.0"
 )
 
+app.add_middleware(RequestLoggingMiddleware)
 logger.info("BlackTrace API initialized")
 
 @app.get("/")
