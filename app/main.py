@@ -1,7 +1,11 @@
 from fastapi import FastAPI
-from datetime import datetime, timezone
+from app.routes.health import router as health_router
 
-app = FastAPI()
+app = FastAPI(
+        title="BlackTrace",
+        description="AI-Powered Cyber Defence and Threat Hunting System",
+        version="0.1.0"
+)
 
 @app.get("/")
 def root():
@@ -11,10 +15,4 @@ def root():
         "message": "BlackTrace backend initialized successfully"
     }
 
-@app.get("/health")
-def health_check():
-    return {
-        "status": "Healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "service": "BlackTrace API"
-    }
+app.include_router(health_router)
