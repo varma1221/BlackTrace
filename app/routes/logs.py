@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.schemas.log_schema import SecurityLog
 from app.core.logging_config import logger
+from app.services.threat_analyzer import analyze_security_event
 
 router = APIRouter()
 
@@ -16,10 +17,11 @@ def ingest_log(log: SecurityLog):
     )
     
     security_events.append(log)
+    threat_analysis = analyze_security_event(log)
     
     return {
         "status": "Success",
         "message": "Security event ingested successfully",
-        "total_events": len(security_events)
+        "total_events": len(security_events),
+        "analysis": threat_analysis
     }
-
