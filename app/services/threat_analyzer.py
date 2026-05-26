@@ -1,35 +1,16 @@
-from collections import defaultdict
-from app.core.logging_config import logger
-
-failed_login_tracker = defaultdict(int) 
+from app.rules.brute_force_rule import detect_brute_force
 
 def analyze_security_event(log):
+    detection_rules = [
+        detect_brute_force
+    ]
     
-    if log.event_type == "failed_login":
+    for rule in detection_rules:
+        result = rule(log)
         
-        failed_login_tracker[log.source_ip] += 1
-        failed_attempts = failed_login_tracker[log.source_ip]
-        
-        logger.info(
-            f"Failed login count for "
-            f"{log.source_ip}: {failed_attempts}"
-        )
-        
-        if failed_attempts >= 3:
-            logger.warning(
-                f"Potential brute-force attack detected"
-                f"from IP: {log.source_ip}"
-            )
-        
-            return {
-                "threat_detected": True,
-                "threat_type": "Potential Brute Force attack",
-                "source_ip": log.source_ip,
-                "failed_attempts": failed_attempts,
-                "recommended_action": "Temporarily block IP address"
-            }
+        if result:
+            return result
     
     return {
         "threat_detected": False
     }
-        
