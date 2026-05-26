@@ -23,5 +23,5 @@ def ingest_log(log: SecurityLog):
         "status": "Success",
         "message": "Security event ingested successfully",
         "total_events": len(security_events),
-        "analysis": threat_analysis
+        "result": threat_analysis
     }

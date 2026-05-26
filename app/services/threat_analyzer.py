@@ -1,4 +1,5 @@
 from app.rules.brute_force_rule import detect_brute_force
+from app.services.alert_manager import create_alert
 
 def analyze_security_event(log):
     detection_rules = [
@@ -9,7 +10,13 @@ def analyze_security_event(log):
         result = rule(log)
         
         if result:
-            return result
+            alert = create_alert(result)
+            
+        return {
+            "threat_detected": True,
+            "analysis": result,
+            "alert": alert
+        }
     
     return {
         "threat_detected": False
