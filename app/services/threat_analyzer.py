@@ -12,11 +12,11 @@ def analyze_security_event(log):
         if result:
             alert = create_alert(result)
             
-        return {
-            "threat_detected": True,
-            "analysis": result,
-            "alert": alert
-        }
+            return {
+                "threat_detected": True,
+                "analysis": result,
+                "alert": alert
+            }
     
     return {
         "threat_detected": False
