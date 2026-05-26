@@ -4,6 +4,7 @@ from app.routes.health import router as health_router
 from app.core.logging_config import logger
 from app.core.middleware import RequestLoggingMiddleware
 from app.routes.logs import router as logs_router
+from app.routes.alerts import router as alerts_router
 
 app = FastAPI(
         title="BlackTrace API",
@@ -26,3 +27,4 @@ def root():
 
 app.include_router(health_router)
 app.include_router(logs_router)
+app.include_router(alerts_router)
