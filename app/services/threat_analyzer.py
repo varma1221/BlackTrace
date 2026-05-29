@@ -1,7 +1,20 @@
+"""
+Threat analysis service for BlackTrace security events.
+
+This module coordinates detection rules and alert creation for logs
+received through the ingestion API.
+"""
 from app.rules.brute_force_rule import detect_brute_force
 from app.services.alert_manager import create_alert
 
 def analyze_security_event(log):
+    """
+    Analyze a security log using the configured detection rules.
+
+    Each rule receives the same validated log and may return a detection
+    result. When a threat is detected, an alert is created and returned
+    with the analysis response.
+    """
     detection_rules = [
         detect_brute_force
     ]

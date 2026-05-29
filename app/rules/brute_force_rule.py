@@ -1,9 +1,22 @@
+"""
+Brute-force detection rule for BlackTrace.
+
+This module tracks failed login attempts by source IP and reports a
+potential brute-force attack when the configured threshold is reached.
+"""
 from collections import defaultdict
 from app.core.logging_config import logger
 
 failed_login_tracker = defaultdict(int)
 
 def detect_brute_force(log):
+    """
+    Detect repeated failed login attempts from the same source IP.
+
+    Returns a detection result when the failed login count for an IP
+    reaches the current threshold. Returns None when the log is not
+    relevant to this rule or no threat is detected.
+    """
     if log.event_type != "failed_login":
         return None
 
