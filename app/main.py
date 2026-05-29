@@ -1,5 +1,10 @@
-from fastapi import FastAPI
+"""
+Main FastAPI application setup for BlackTrace.
 
+This module creates the API app, attaches request logging middleware,
+and registers all route modules used by the backend.
+"""
+from fastapi import FastAPI
 from app.routes.health import router as health_router
 from app.core.logging_config import logger
 from app.core.middleware import RequestLoggingMiddleware
