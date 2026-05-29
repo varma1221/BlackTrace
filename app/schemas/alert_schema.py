@@ -6,5 +6,6 @@ class SecurityAlert(BaseModel):
     threat_type: str
     source_ip: str
     severity: str
+    status: str
     timestamp: datetime
     recommended_action: str
