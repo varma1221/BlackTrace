@@ -12,6 +12,7 @@ def create_alert(threat_analysis):
         threat_type=threat_analysis["threat_type"],
         source_ip=threat_analysis["source_ip"],
         severity=calculate_severity(threat_analysis),
+        status="Active",
         timestamp=datetime.now(timezone.utc),
         recommended_action=threat_analysis["recommended_action"],
     )
