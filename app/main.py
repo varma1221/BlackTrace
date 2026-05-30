@@ -26,8 +26,8 @@ def root():
     
     return {
         "project": "BlackTrace",
-        "status": "active",
-        "message": "BlackTrace backend initialized successfully"
+        "status": "Active",
+        "message": "BlackTrace backend initialized successfully."
     }
 
 app.include_router(health_router)
