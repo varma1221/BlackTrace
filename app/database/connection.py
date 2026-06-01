@@ -1,3 +1,9 @@
+"""
+Database connection setup for BlackTrace.
+
+This module configures the SQLAlchemy engine, session factory, and
+declarative base used by the application's database models.
+"""
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
