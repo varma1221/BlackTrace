@@ -5,8 +5,11 @@ This module exposes the endpoint where validated security events enter
 the threat detection pipeline.
 """
 from fastapi import APIRouter
+from fastapi import Depends
+from sqlalchemy.orm import Session
 from app.schemas.log_schema import SecurityLog
 from app.core.logging_config import logger
+from app.database.session import get_db
 from app.services.threat_analyzer import analyze_security_event
 
 router = APIRouter()
@@ -14,7 +17,10 @@ router = APIRouter()
 security_events = []
 
 @router.post("/logs")
-def ingest_log(log: SecurityLog):
+def ingest_log(
+    log: SecurityLog,
+    db: Session = Depends(get_db)
+):
     """
     Ingest a security event and submit it for threat analysis.
 
@@ -28,7 +34,7 @@ def ingest_log(log: SecurityLog):
     )
     
     security_events.append(log)
-    threat_analysis = analyze_security_event(log)
+    threat_analysis = analyze_security_event(log, db)
     
     return {
         "status": "Success",
