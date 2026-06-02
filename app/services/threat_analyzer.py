@@ -6,6 +6,7 @@ received through the ingestion API.
 """
 from app.rules.brute_force_rule import detect_brute_force
 from app.services.alert_manager import create_alert
+from app.services.threat_intelligence import enrich_ip
 from sqlalchemy.orm import Session
 
 def analyze_security_event(log, db: Session):
@@ -24,6 +25,14 @@ def analyze_security_event(log, db: Session):
         result = rule(log)
         
         if result:
+            threat_intelligence = enrich_ip(
+                result["source_ip"]
+            )
+            
+            result["threat_intelligence"] = (
+                threat_intelligence
+            )
+            
             alert = create_alert(result, db)
             
             return {
