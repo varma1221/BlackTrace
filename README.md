@@ -1,3 +1,4 @@
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg) ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 <div align="center">
 
 # BlackTrace
