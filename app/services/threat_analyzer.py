@@ -6,8 +6,9 @@ received through the ingestion API.
 """
 from app.rules.brute_force_rule import detect_brute_force
 from app.services.alert_manager import create_alert
+from sqlalchemy.orm import Session
 
-def analyze_security_event(log):
+def analyze_security_event(log, db: Session):
     """
     Analyze a security log using the configured detection rules.
 
@@ -23,7 +24,7 @@ def analyze_security_event(log):
         result = rule(log)
         
         if result:
-            alert = create_alert(result)
+            alert = create_alert(result, db)
             
             return {
                 "threat_detected": True,
