@@ -10,6 +10,7 @@ from app.core.logging_config import logger
 from app.core.middleware import RequestLoggingMiddleware
 from app.routes.logs import router as logs_router
 from app.routes.alerts import router as alerts_router
+from app.routes.metrics import router as metrics_router
 from app.database.connection import engine
 from app.database.models import Base
 
@@ -35,4 +36,5 @@ def root():
 app.include_router(health_router)
 app.include_router(logs_router)
 app.include_router(alerts_router)
+app.include_router(metrics_router)
 Base.metadata.create_all(bind=engine)
