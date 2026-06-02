@@ -8,15 +8,16 @@ used for SOC dashboards and monitoring systems.
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-
 from app.database.models import Alert
 from app.database.session import get_db
+from app.security.auth import verify_api_key
 
 router = APIRouter()
 
 @router.get("/metrics/dashboard")
 def get_security_dashboard_metrics(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
 ):
     
     total_alerts = db.query(Alert).count()
@@ -42,7 +43,8 @@ def get_security_dashboard_metrics(
 
 @router.get("/metrics/severity-distribution")
 def get_severity_distribution(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
 ):
     
     severity_counts = db.query(
