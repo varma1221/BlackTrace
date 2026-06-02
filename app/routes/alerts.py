@@ -9,12 +9,14 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, HTTPException
 from app.database.models import Alert
 from app.database.session import get_db
+from app.security.auth import verify_api_key
 
 router = APIRouter()
 
 @router.get("/alerts")
 def get_alerts(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
 ):
     """
     Return all security alerts currently stored by BlackTrace.
@@ -30,7 +32,11 @@ def get_alerts(
     }
     
 @router.get("/alerts/{alert_id}")
-def get_alert_by_id(alert_id: int, db: Session = Depends(get_db)):
+def get_alert_by_id(
+    alert_id: int,
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
+):
     """
     Return a single security alert by its alert ID.
 
@@ -53,7 +59,8 @@ def get_alert_by_id(alert_id: int, db: Session = Depends(get_db)):
 def update_alert_status(
     alert_id: int,
     status: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
 ):
     """
     Update the status of an existing security alert.
