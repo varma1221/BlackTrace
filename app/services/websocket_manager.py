@@ -13,7 +13,7 @@ class ConnectionManager:
 
     async def connect(
         self,
-        websocket: WebSocket
+        websocket: WebSocket # Represents connected dashboard client
     ):
 
         await websocket.accept()
@@ -33,10 +33,10 @@ class ConnectionManager:
     async def broadcast(
         self,
         message: dict
-    ):
+    ): # Deletes disconnected client from registry
         for connection in self.active_connections:
             await connection.send_json(
                 message
             )
 
-manager = ConnectionManager()
+manager = ConnectionManager() # Creates single shared manager object
