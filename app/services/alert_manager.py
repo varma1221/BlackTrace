@@ -1,8 +1,8 @@
 """
-Alert management service for BlackTrace.
+Service for alert orchestration and persistence.
 
-This module creates structured security alerts from threat detection
-results and stores them for retrieval through alert APIs.
+Handles the conversion of detection results into database records and
+manages real-time event broadcasting to connected clients.
 """
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
@@ -15,10 +15,17 @@ import asyncio
 
 def create_alert(threat_analysis, db: Session):
     """
-    Create and store a security alert from a detection result.
+    Creates a security alert and triggers real-time notifications.
 
-    The alert is assigned an ID, severity, active status, UTC timestamp,
-    and recommended response action before being added to the alert store.
+    Persists the alert to the database and schedules an asynchronous
+    broadcast to all active WebSocket clients.
+
+    Args:
+        threat_analysis (dict): Data from the threat detection engine.
+        db (Session): Database session for alert persistence.
+
+    Returns:
+        SecurityAlert: Pydantic model representation of the generated alert.
     """
     alert = Alert(
         threat_type=threat_analysis["threat_type"],

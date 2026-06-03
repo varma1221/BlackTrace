@@ -1,19 +1,25 @@
 """
-Database models for persisted BlackTrace records.
+SQLAlchemy ORM models for persistent storage.
 
-This module defines SQLAlchemy ORM models that map application data
-to database tables.
+Defines the database schema for security alerts and other core entities
+within the BlackTrace ecosystem.
 """
 from sqlalchemy import Column, Integer, String, DateTime
 from app.database.connection import Base
 
 class Alert(Base):
     """
-    Database model for a persisted security alert.
+    Persistence model for security alerts.
 
-    Each Alert instance represents one row in the alerts table and stores
-    the detection outcome needed for alert review and incident tracking.
-    """    
+    Attributes:
+        alert_id (int): Unique identifier for the alert record.
+        threat_type (str): The classification of the detected security threat.
+        source_ip (str): Originating IP address of the suspicious activity.
+        severity (str): Calculated risk level (e.g., Critical, High, Medium, Low).
+        status (str): Operational state of the alert (e.g., Active, Resolved).
+        timestamp (datetime): UTC timestamp of the detection event.
+        recommended_action (str): Suggested remediation steps for SOC analysts.
+    """  
     __tablename__ = "alerts"
     
     alert_id = Column(Integer, primary_key=True, index=True)

@@ -1,10 +1,9 @@
 """
-Shared logging configuration for the BlackTrace backend.
+Centralized logging configuration for BlackTrace.
 
-This module configures the application logger used by routes, services,
-rules, and middleware.
+Defines the global logger and formatting standards used across routes,
+services, and background tasks to ensure consistent observability.
 """
-
 import logging
 
 logging.basicConfig(

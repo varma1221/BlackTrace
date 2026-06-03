@@ -1,15 +1,18 @@
 """
-Severity classification service for BlackTrace alerts.
+Risk classification engine for detected threats.
 
-This module assigns a severity level to a detection result before the
-alert management service creates a SecurityAlert.
+Determines alert severity levels based on specific attack metrics and
+predefined thresholds.
 """
 def calculate_severity(threat_analysis):
     """
-    Calculate alert severity from threat analysis details.
+    Calculates alert severity based on threat analysis metrics.
 
-    The current scoring logic uses failed login attempt counts to classify
-    brute-force risk as Low, Medium, High, or Critical.
+    Args:
+        threat_analysis (dict): Data containing attack details like failed counts.
+
+    Returns:
+        str: Severity classification (Critical, High, Medium, or Low).
     """
     failed_attempts = threat_analysis.get(
         "failed_attempts",

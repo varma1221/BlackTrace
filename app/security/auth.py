@@ -1,10 +1,9 @@
 """
-Authentication and API security utilities.
+Security and authentication utilities.
 
-This module protects sensitive BlackTrace endpoints
-using API key authentication
+Implements API key validation to protect sensitive SOC endpoints from
+unauthorized access.
 """
-
 import os
 from dotenv import load_dotenv
 from fastapi import Header, HTTPException
@@ -15,17 +14,19 @@ BLACKTRACE_API_KEY = os.getenv(
     "BLACKTRACE_API_KEY"
 )
 
-def verify_api_key(
-    x_api_key: str = Header(None)
-):
+def verify_api_key(x_api_key: str = Header(None)):
     """
-    Verify incoming API Key from request headers.
-    
-    This function protects sensitive SOC endpoints
-    by rejecting unauthorized reuests that do not 
-    contain the correct API key.
+    Validates the API key provided in the request headers.
+
+    Args:
+        x_api_key (str): The key extracted from the 'X-API-Key' header.
+
+    Returns:
+        str: The validated API key if successful.
+
+    Raises:
+        HTTPException: 401 error if the key is missing or invalid.
     """
-    
     if x_api_key != BLACKTRACE_API_KEY:
         raise HTTPException(
             status_code=401,

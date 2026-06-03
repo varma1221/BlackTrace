@@ -1,8 +1,8 @@
 """
-Request lifecycle middleware for the BlackTrace API.
+HTTP middleware for request lifecycle management.
 
-This module provides middleware that records request method, path,
-response status, and processing time for each API call.
+This module provides custom FastAPI middleware for monitoring and logging
+all incoming HTTP traffic to the BlackTrace backend for audit and performance.
 """
 import time
 from fastapi import Request
@@ -11,17 +11,24 @@ from app.core.logging_config import logger
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """
-    Middleware that logs basic metadata for every HTTP request.
+    Middleware for logging HTTP request and response metadata.
 
-    The middleware measures request duration and records the completed
-    response status after the request has been handled by the matched route.
+    Intercepts the request lifecycle to measure processing duration and log
+    critical routing metadata such as method, path, and status code.
     """
     async def dispatch(self, request: Request, call_next): # FastAPI automatically calls this method for every request.
         """
-        Process an incoming request and log its lifecycle details.
+        Intercepts the request-call chain to log execution details.
 
-        The request is forwarded to the next handler, then the completed
-        response is logged with timing and routing metadata.
+        Measures the time taken for the matched route handler to respond and
+        records the outcome in the application logs.
+
+        Args:
+            request (Request): The incoming FastAPI request object.
+            call_next (Callable): The next handler in the middleware chain.
+
+        Returns:
+            Response: The HTTP response returned by the requested API route.
         """
         start_time = time.time()
         response = await call_next(request) # Forward request to the route handler and wait for the response

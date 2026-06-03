@@ -1,8 +1,9 @@
 """
-Main FastAPI application setup for BlackTrace.
+Entry point for the BlackTrace API.
 
-This module creates the API app, attaches request logging middleware,
-and registers all route modules used by the backend.
+This module initializes the FastAPI application, configures global middleware,
+and registers all service-layer routers. It also handles initial database
+schema synchronization during startup.
 """
 from fastapi import FastAPI
 from app.routes.health import router as health_router
@@ -26,6 +27,12 @@ logger.info("BlackTrace API initialized")
 
 @app.get("/")
 def root():
+    """
+    Root endpoint for basic service health and metadata.
+
+    Returns:
+        dict: A dictionary containing project name, status, and greeting.
+    """
     logger.info("Root endpoint accessed")
     
     return {

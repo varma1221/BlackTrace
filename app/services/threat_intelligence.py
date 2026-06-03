@@ -1,20 +1,18 @@
 """
 Threat Intelligence enrichment service.
 
-This module enriches suspicious IP addresses with
-security intelligence metadata that helps analysts
-understand attacker context and risk.
+Enriches suspicious IP addresses with reputation data and geographic context
+to aid in security investigations.
 """
-
 def enrich_ip(source_ip: str):
     """
-    Enriches an IP address with threat intelligence data.
-    
+    Enriches an IP address with intelligence metadata.
+
     Args:
-        source_ip: The IPv4 address to investigate.
+        source_ip (str): The IPv4 address to investigate.
+
     Returns:
-        A dictionary containing country, ISP, threat_score and
-        known_malicious status
+        dict: Metadata including country, ISP, threat score, and malicious status.
     """
     simulated_threat_data = {
         "185.220.101.1": {

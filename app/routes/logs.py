@@ -1,8 +1,8 @@
 """
-Security log ingestion routes for the BlackTrace API.
+Security log ingestion and processing routes.
 
-This module exposes the endpoint where validated security events enter
-the threat detection pipeline.
+Handles the submission of raw security events and initiates the
+asynchronous threat analysis pipeline.
 """
 from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
@@ -20,10 +20,14 @@ def process_security_event(
     db
 ):
     """
-    Process security events asynchronously.
+    Internal task for executing the threat analysis pipeline.
 
-    This function executes the threat analysis
-    pipeline independently from the request cycle.
+    Executed as a background task to prevent blocking the ingestion response
+    while rules and intelligence enrichment run.
+
+    Args:
+        log (SecurityLog): The validated security log payload.
+        db (Session): Database session for alert persistence.
     """
     analyze_security_event(log, db)
 
@@ -34,11 +38,18 @@ def ingest_log(
     db: Session = Depends(get_db)
 ):
     """
-    Ingest a security event and submit it for threat analysis.
+    Ingests a security log and queues background analysis.
 
-    The incoming request body is validated as a SecurityLog before this
-    function runs. The validated event is stored in memory and passed to
-    the threat analysis service for rule-based detection.
+    Validates the incoming log and triggers the threat analyzer via a
+    non-blocking background task.
+
+    Args:
+        log (SecurityLog): The incoming security event schema.
+        background_tasks (BackgroundTasks): FastAPI background task manager.
+        db (Session): Database session dependency.
+
+    Returns:
+        dict: Status of acceptance and current event metrics.
     """
     logger.info(
         f"Security Event Received: "
