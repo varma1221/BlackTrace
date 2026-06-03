@@ -1,8 +1,8 @@
 """
-Alert retrieval and update routes for the BlackTrace API.
+API endpoints for security alert management.
 
-This module exposes API endpoints for reading generated security alerts
-and updating alert status during incident handling workflows.
+Exposes routes for retrieving alert history and updating incident status
+during the SOC investigation workflow.
 """
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -19,10 +19,14 @@ def get_alerts(
     api_key: str = Depends(verify_api_key)
 ):
     """
-    Return all security alerts currently stored by BlackTrace.
+    Retrieves all security alerts from the database.
 
-    Alerts are read from the in-memory alert store populated by the
-    alert management service when threat detection rules identify risk.
+    Args:
+        db (Session): Database session dependency.
+        api_key (str): Verified API key for authentication.
+
+    Returns:
+        dict: A collection containing the alert count and full alert list.
     """
     alerts = db.query(Alert).all()
     
@@ -38,11 +42,19 @@ def get_alert_by_id(
     api_key: str = Depends(verify_api_key)
 ):
     """
-    Return a single security alert by its alert ID.
+    Retrieves a specific alert by its unique identifier.
 
-    Raises a 404 response when no alert exists for the requested ID.
+    Args:
+        alert_id (int): The ID of the alert to fetch.
+        db (Session): Database session dependency.
+        api_key (str): Verified API key for authentication.
+
+    Returns:
+        Alert: The requested alert database model instance.
+
+    Raises:
+        HTTPException: 404 error if the alert does not exist.
     """
-    
     alert = db.query(Alert).filter(
         Alert.alert_id == alert_id
     ).first()
@@ -63,10 +75,21 @@ def update_alert_status(
     api_key: str = Depends(verify_api_key)
 ):
     """
-    Update the status of an existing security alert.
+    Updates the operational status of an existing alert.
 
-    This endpoint supports incident tracking by allowing an alert to move
-    through states such as open, investigating, resolved, or dismissed.
+    Used to transition alerts between states like 'active' and 'resolved'.
+
+    Args:
+        alert_id (int): The ID of the alert to update.
+        status (str): The new status string to apply.
+        db (Session): Database session dependency.
+        api_key (str): Verified API key for authentication.
+
+    Returns:
+        dict: Confirmation message and the updated alert object.
+
+    Raises:
+        HTTPException: 404 error if the alert is not found.
     """
     alert = db.query(Alert).filter(
         Alert.alert_id == alert_id

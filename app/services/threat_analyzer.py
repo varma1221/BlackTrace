@@ -1,8 +1,8 @@
 """
-Threat analysis service for BlackTrace security events.
+Core threat detection and analysis service.
 
-This module coordinates detection rules and alert creation for logs
-received through the ingestion API.
+Coordinates the execution of detection rules and enriches suspicious
+events with threat intelligence context.
 """
 from app.rules.brute_force_rule import detect_brute_force
 from app.services.alert_manager import create_alert
@@ -11,11 +11,17 @@ from sqlalchemy.orm import Session
 
 def analyze_security_event(log, db: Session):
     """
-    Analyze a security log using the configured detection rules.
+    Analyzes a security log using registered detection rules.
 
-    Each rule receives the same validated log and may return a detection
-    result. When a threat is detected, an alert is created and returned
-    with the analysis response.
+    Orchestrates the detection workflow, IP enrichment, and alert generation
+    if a threat is identified.
+
+    Args:
+        log (SecurityLog): The raw security event to evaluate.
+        db (Session): Database session for persistence.
+
+    Returns:
+        dict: Analysis result containing threat status and any generated alerts.
     """
     detection_rules = [
         detect_brute_force

@@ -1,18 +1,16 @@
 """
-Schema definitions for security log ingestion.
+Data transfer objects for security log ingestion.
 
-This module defines the data contract for security events submitted to
-the BlackTrace detection pipeline.
+Defines the validation schema for incoming security events.
 """
 from pydantic import BaseModel
 from datetime import datetime
 
 class SecurityLog(BaseModel):
     """
-    Request model for an incoming security event.
+    Schema for an incoming security event.
 
-    Validates incoming log payloads against this schema before
-    passing them to route handlers and threat detection services.
+    Ensures ingested logs contain the metadata required for threat analysis.
     """
     source_ip: str
     event_type: str

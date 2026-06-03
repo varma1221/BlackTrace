@@ -1,10 +1,9 @@
 """
-Security metrics and SOC dashboard routes.
+Operational metrics for SOC monitoring.
 
-This module provides operational security statistics
-used for SOC dashboards and monitoring systems.
+Provides aggregated statistics on alert volume and severity distribution
+for security dashboarding.
 """
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -19,7 +18,16 @@ def get_security_dashboard_metrics(
     db: Session = Depends(get_db),
     api_key: str = Depends(verify_api_key)
 ):
-    
+    """
+    Aggregates high-level alert statistics for the dashboard.
+
+    Args:
+        db (Session): Database session dependency.
+        api_key (str): Verified API key for authentication.
+
+    Returns:
+        dict: Counts of total, active, resolved, and critical alerts.
+    """
     total_alerts = db.query(Alert).count()
     
     active_alerts = db.query(Alert).filter(
@@ -46,7 +54,16 @@ def get_severity_distribution(
     db: Session = Depends(get_db),
     api_key: str = Depends(verify_api_key)
 ):
-    
+    """
+    Calculates the distribution of alerts across all severity levels.
+
+    Args:
+        db (Session): Database session dependency.
+        api_key (str): Verified API key for authentication.
+
+    Returns:
+        dict: A list of severity levels and their corresponding counts.
+    """
     severity_counts = db.query(
         Alert.severity,
         func.count(Alert.alert_id)
