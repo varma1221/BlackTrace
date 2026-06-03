@@ -16,7 +16,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
     The middleware measures request duration and records the completed
     response status after the request has been handled by the matched route.
     """
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next): # FastAPI automatically calls this method for every request.
         """
         Process an incoming request and log its lifecycle details.
 
@@ -24,7 +24,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         response is logged with timing and routing metadata.
         """
         start_time = time.time()
-        response = await call_next(request)
+        response = await call_next(request) # Forward request to the route handler and wait for the response
         process_time = time.time() - start_time
         
         logger.info(
