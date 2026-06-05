@@ -1,26 +1,22 @@
 """
 Database engine and base configuration for SQLAlchemy.
 
-Establishes the core database connection using SQLAlchemy and defines the
-declarative base used for all ORM model definitions.
+Initializes the PostgreSQL database engine and provides the
+session factory and declarative base used acorss the application
 """
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from app.core.config import DATABASE_URL
 
-DATABASE_URL = "sqlite:///./blacktrace.db"
+# Core SQLAlchemy engine responsible for managing PostgreSQL connections
+engine = create_engine(DATABASE_URL)
 
-# Core SQLAlchemy engine responsible for managing database connections
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
-)
-
-# Factory for creating independent database sessions for request handling
+# Factory for creating isolated database sessions
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine
 )
 
-# Base class inherited by all SQLAlchemy ORM database models
+# Base class inherited by all ORM models
 Base = declarative_base()
