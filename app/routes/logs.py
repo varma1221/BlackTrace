@@ -10,10 +10,9 @@ from app.schemas.log_schema import SecurityLog
 from app.core.logging_config import logger
 from app.database.session import get_db
 from app.services.threat_analyzer import analyze_security_event
+from app.services.event_service import store_raw_security_event
 
 router = APIRouter()
-
-security_events = []
 
 def process_security_event(
     log,
@@ -56,7 +55,7 @@ def ingest_log(
         f"{log.event_type} from {log.source_ip} at {log.timestamp}"
     )
     
-    security_events.append(log)
+    store_raw_security_event(log, db)
     background_tasks.add_task(
         process_security_event,
         log,
@@ -68,5 +67,4 @@ def ingest_log(
         "message": (
             "Security event received and queued for background analysis"
         ),
-        "total_events": len(security_events),
     }
