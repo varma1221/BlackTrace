@@ -13,7 +13,7 @@ An autonomous cybersecurity intelligence and defense platform designed for real-
 
 # Overview
 
-BlackTrace is a next-generation cybersecurity operations platform built to simulate and automate modern [Security Operations Center (SOC)](https://en.wikipedia.org/wiki/Security_operations_center) workflows at scale.
+BlackTrace is a next-generation cybersecurity operations platform built to simulate and automate modern [Security Operations Center (SOC)](https://en.wikipedia.org/wiki/Information_security_operations_center) workflows at scale.
 
 The platform combines real-time telemetry ingestion, behavioral analytics, threat intelligence enrichment, autonomous detection pipelines, AI-assisted investigation systems, and distributed incident management into a unified security infrastructure.
 
