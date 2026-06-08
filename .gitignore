@@ -19,3 +19,9 @@ Thumbs.db
 
 #Database Files
 *.db
+
+# ML datasets
+detection_engine/data/raw/
+
+# Trained models
+detection_engine/models
