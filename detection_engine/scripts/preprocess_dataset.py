@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 
 RAW_DATASET_PATH = ("detection_engine/data/raw/Tuesday-WorkingHours.pcap_ISCX.csv")
+PROCESSED_DATASET_PATH = ("detection_engine/data/processed/Tuesday-WorkingHours-Processed.csv")
 
 def main():
     """
@@ -41,6 +42,8 @@ def main():
         },
         inplace=True
     )
+
+    df.to_csv(PROCESSED_DATASET_PATH, index=False)
 
 if __name__ == "__main__":
     main()
