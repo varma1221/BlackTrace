@@ -52,13 +52,14 @@ def main():
 
     label_mapping = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)))
 
-    df.to_csv(PROCESSED_DATASET_PATH, index=False)
+    feature_columns_to_drop = ["Label", "y_binary", "y_multiclass"]
 
-    print("\nBinary Label Distribution:")
-    print(df["y_binary"].value_counts())
-
-    print("\nMulticlass Label Mapping:")
-    print(label_mapping)
+    X = df.drop(columns=feature_columns_to_drop)
+    
+    y_binary = df["y_binary"]
+    y_multiclass = df["y_multiclass"]
+    
+    df.to_csv(PROCESSED_DATASET_PATH, index=False)    
 
 if __name__ == "__main__":
     main()
