@@ -7,6 +7,7 @@ machine learning-ready preprocessing transformations for network data.
 
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
 
 RAW_DATASET_PATH = ("detection_engine/data/raw/Tuesday-WorkingHours.pcap_ISCX.csv")
 PROCESSED_DATASET_PATH = ("detection_engine/data/processed/Tuesday-WorkingHours-Processed.csv")
@@ -43,7 +44,21 @@ def main():
         inplace=True
     )
 
+    df["y_binary"] = (df["Label"] != "BENIGN").astype(int)
+
+    label_encoder = LabelEncoder()
+
+    df["y_multiclass"] = label_encoder.fit_transform(df["Label"])
+
+    label_mapping = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)))
+
     df.to_csv(PROCESSED_DATASET_PATH, index=False)
+
+    print("\nBinary Label Distribution:")
+    print(df["y_binary"].value_counts())
+
+    print("\nMulticlass Label Mapping:")
+    print(label_mapping)
 
 if __name__ == "__main__":
     main()
