@@ -5,12 +5,15 @@ This module handles dataset sanitization, schema normalization, and
 machine learning-ready preprocessing transformations for network data.
 """
 
+from pathlib import Path
+import json
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
-RAW_DATASET_PATH = ("detection_engine/data/raw/Tuesday-WorkingHours.pcap_ISCX.csv")
-PROCESSED_DATASET_PATH = ("detection_engine/data/processed/Tuesday-WorkingHours-Processed.csv")
+RAW_DATASET_PATH = Path("detection_engine/data/raw/Tuesday-WorkingHours.pcap_ISCX.csv")
+PROCESSED_DATASET_PATH = Path("detection_engine/data/processed/Tuesday-WorkingHours-Processed.csv")
+LABEL_MAPPING_PATH = Path("detection_engine/data/processed/label_mapping.json")
 
 def main():
     """
@@ -22,6 +25,7 @@ def main():
 
     # Filter the dataset to find only the rows where the Flow Duration recorded 0 seconds.
     zero_duration_flows = df[df["Flow Duration"] == 0]
+    df["is_zero_duration"] = (df["Flow Duration"] == 0).astype(int)
 
     # Find the "truly_empty" glitches where absolutely zero packets were sent back and forth.
     truly_empty_flows = zero_duration_flows[
@@ -29,20 +33,20 @@ def main():
         (zero_duration_flows["Total Backward Packets"] == 0)
     ]
 
+    df = df.drop(index=truly_empty_flows.index).reset_index(drop=True)
+
     throughput_columns = ["Flow Bytes/s", "Flow Packets/s"]
+
+    finite_mask = df["is_zero_duration"] == 0
+
+    bytes_cap = (df.loc[finite_mask, "Flow Bytes/s"].replace([np.inf, -np.inf], np.nan).quantile(0.999))
+    packets_cap = (df.loc[finite_mask, "Flow Packets/s"].replace([np.inf, -np.inf], np.nan).quantile(0.999))
 
     df[throughput_columns] = df[throughput_columns].replace([np.inf, -np.inf], np.nan)
 
-    bytes_cap = df["Flow Bytes/s"].quantile(0.999)
-    packets_cap = df["Flow Packets/s"].quantile(0.999)
-
-    df.fillna(
-        value={
-            "Flow Bytes/s": bytes_cap,
-            "Flow Packets/s": packets_cap
-        },
-        inplace=True
-    )
+    df.loc[df["is_zero_duration"] == 1, throughput_columns] = df.loc[df["is_zero_duration"] == 1, throughput_columns].fillna(0)
+    df.loc[df["is_zero_duration"] == 0, "Flow Bytes/s"] = df.loc[df["is_zero_duration"] == 0, "Flow Bytes/s"].fillna(bytes_cap)
+    df.loc[df["is_zero_duration"] == 0, "Flow Packets/s"] = df.loc[df["is_zero_duration"] == 0, "Flow Packets/s"].fillna(packets_cap)
 
     df["y_binary"] = (df["Label"] != "BENIGN").astype(int)
 
@@ -50,7 +54,14 @@ def main():
 
     df["y_multiclass"] = label_encoder.fit_transform(df["Label"])
 
+    PROCESSED_DATASET_PATH.parent.mkdir(parents=True, exist_ok=True)
+
     label_mapping = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)))
+
+    label_mapping = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_).tolist()))
+
+    with open(LABEL_MAPPING_PATH, "w") as f:
+        json.dump(label_mapping, f, indent=2)
 
     feature_columns_to_drop = ["Label", "y_binary", "y_multiclass"]
 
@@ -58,8 +69,15 @@ def main():
     
     y_binary = df["y_binary"]
     y_multiclass = df["y_multiclass"]
+
+    assert not df.isnull().any().any()
+
+    assert not np.isinf(df.select_dtypes(include=np.number).values).any()
     
-    df.to_csv(PROCESSED_DATASET_PATH, index=False)    
+    df.to_csv(PROCESSED_DATASET_PATH, index=False)  
+
+    print(df[["Label", "y_binary", "y_multiclass"]].head())
+    
 
 if __name__ == "__main__":
     main()
