@@ -10,6 +10,7 @@ import json
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 
 RAW_DATASET_PATH = Path("detection_engine/data/raw/Tuesday-WorkingHours.pcap_ISCX.csv")
 PROCESSED_DATASET_PATH = Path("detection_engine/data/processed/Tuesday-WorkingHours-Processed.csv")
@@ -56,8 +57,6 @@ def main():
 
     PROCESSED_DATASET_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    label_mapping = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)))
-
     label_mapping = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_).tolist()))
 
     with open(LABEL_MAPPING_PATH, "w") as f:
@@ -70,14 +69,42 @@ def main():
     y_binary = df["y_binary"]
     y_multiclass = df["y_multiclass"]
 
+    # Binary train-test split
+    X_train, X_test, y_binary_train, y_binary_test = (
+        train_test_split(
+            X, y_binary, test_size=0.2, random_state=42, stratify=y_binary
+        )
+    )
+
+    # Multiclass train-test-split
+    _, _, y_multiclass_train, y_multiclass_test = (
+        train_test_split(
+            X,
+            y_multiclass,
+            test_size=0.2,
+            random_state=42,
+            stratify=y_multiclass
+        )
+    )
+
+    # Validation Outputs
+    print("\nTraining Feature Shape:")
+    print(X_train.shape)
+
+    print("\nTesting Feature Shape:")
+    print(X_test.shape)
+
+    print("\nBinary Training Distribution:")
+    print(y_binary_train.value_counts())
+
+    print("\nBinary Testing Distribution:")
+    print(y_binary_test.value_counts())
+
     assert not df.isnull().any().any()
 
     assert not np.isinf(df.select_dtypes(include=np.number).values).any()
     
     df.to_csv(PROCESSED_DATASET_PATH, index=False)  
-
-    print(df[["Label", "y_binary", "y_multiclass"]].head())
-    
 
 if __name__ == "__main__":
     main()
