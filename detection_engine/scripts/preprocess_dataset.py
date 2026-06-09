@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import RobustScaler
 
 RAW_DATASET_PATH = Path("detection_engine/data/raw/Tuesday-WorkingHours.pcap_ISCX.csv")
 PROCESSED_DATASET_PATH = Path("detection_engine/data/processed/Tuesday-WorkingHours-Processed.csv")
@@ -86,6 +87,17 @@ def main():
             stratify=y_multiclass
         )
     )
+
+    scaler = RobustScaler()
+
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.fit_transform(X_test)
+
+    print("\nScaled Training Shape:")
+    print(X_train_scaled.shape)
+
+    print("\nScaled Testing Shape:")
+    print(X_test_scaled.shape)
 
     # Validation Outputs
     print("\nTraining Feature Shape:")
