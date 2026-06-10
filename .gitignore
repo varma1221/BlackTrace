@@ -25,3 +25,7 @@ detection_engine/data/
 
 # Trained models
 detection_engine/models
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
