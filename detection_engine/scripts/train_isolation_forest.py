@@ -17,7 +17,7 @@ NON_FEATURE_COLS = ["Label", "y_binary", "y_multiclass"]
 
 def load_processed_dataset() -> pd.DataFrame:
     df = pd.read_csv(PROCESSED_TUESDAY_DATASET_PATH)
-    print("Loaded processed dataset: {df.shape}")
+    print(f"Loaded processed dataset: {df.shape}")
     return df
 
 def prepare_isolation_forest_data(df: pd.DataFrame):
