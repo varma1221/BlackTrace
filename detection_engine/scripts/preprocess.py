@@ -63,7 +63,7 @@ def handle_infinite_values(df: pd.DataFrame) -> pd.DataFrame:
     infinites_before = np.isinf(df[throughput_columns]).sum().sum()
     # print(f"\n[4/7] Infinite values before cleanup: {infinites_before}") 
 
-    non_zero_duration_rows = df["is_zero_duration"] == 0 # Select rows that are not zero duration flows.
+    non_zero_duration_rows = df["is_zero_duration"] == 0 # Select rows that are not zero duration flows for 2nd strategy
     bytes_cap = (df.loc[non_zero_duration_rows, "Flow Bytes/s"].replace([np.inf, -np.inf], np.nan).quantile(0.999))
     packets_cap = (df.loc[non_zero_duration_rows, "Flow Packets/s"].replace([np.inf, -np.inf], np.nan).quantile(0.999))
     # print(f"    Bytes/s cap  (99.9th pct): {bytes_cap:,.0f}")
