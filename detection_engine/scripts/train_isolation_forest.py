@@ -47,7 +47,7 @@ def prepare_isolation_forest_data(df: pd.DataFrame):
     print(f"Train attack ratio: {y_train_full.mean():.4f}")
     print(f"Test attack ratio:  {y_test.mean():.4f}")
 
-    X_train_benign = X_train_full[y_train_full == 0]
+    X_train_benign = X_train_full[y_train_full == 0] # Keep only BENIGN training rows so that Isolation Forest learns normal traffic behaviour only
     print(f"BENIGN-only training rows: {len(X_train_benign)}")
 
     attack_ratio = float(y_train_full.mean())
