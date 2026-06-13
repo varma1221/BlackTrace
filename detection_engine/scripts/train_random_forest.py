@@ -23,6 +23,7 @@ from imblearn.over_sampling import SMOTE
 PROCESSED_PATH = Path("detection_engine/data/processed/Tuesday-WorkingHours-Processed.csv")
 LABEL_MAPPING_PATH = Path("detection_engine/data/processed/label_mapping.json")
 MODEL_DIR = Path("detection_engine/models")
+FEATURE_COLUMNS_PATH = Path("detection_engine/models/feature_columns.joblib")
 
 NON_FEATURE_COLS = ["Label", "y_binary", "y_multiclass"]
 
@@ -36,6 +37,7 @@ def load_data() -> tuple[pd.DataFrame, pd.Series, list[str]]:
     print(f"Loaded dataset: {df.shape}")
 
     X = df.drop(columns=NON_FEATURE_COLS)
+    joblib.dump(X.columns.tolist(), FEATURE_COLUMNS_PATH)
     y_multi = df["y_multiclass"]
 
     # Safety check for no label columns in feature matrix
