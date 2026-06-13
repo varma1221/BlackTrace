@@ -14,10 +14,13 @@ import pandas as pd
 MODEL_PATH = Path("detection_engine/models/random_forest.joblib")
 SCALER_PATH = Path("detection_engine/models/scaler.joblib")
 LABEL_MAPPING_PATH = Path("detection_engine/data/processed/label_mapping.json")
+FEATURE_COLUMNS_PATH = Path("detection_engine/models/feature_columns.joblib")
 
 # Load trainer artifacts
 model = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
+
+feature_columns = joblib.load(FEATURE_COLUMNS_PATH)
 
 with open(LABEL_MAPPING_PATH, "r") as f:
     label_mapping = json.load(f)
@@ -46,6 +49,14 @@ def predict_telemetry(telemetry_features):
 
     # Convert incoming telemetry into DataFrame
     telemetry_df = pd.DataFrame([telemetry_features])
+
+    # Add missing columns
+    for column in feature_columns:
+        if column not in telemetry_df.columns:
+            telemetry_df[column] = 0
+    
+    # Remove unexpected columns
+    telemetry_df = telemetry_df[feature_columns]
 
     # Scale telemtry using training scaler
     telemetry_scaled = scaler.transform(telemetry_df)
