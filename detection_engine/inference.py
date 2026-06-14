@@ -84,24 +84,3 @@ def predict_telemetry(telemetry_features):
         "confidence": confidence_score,
         "probabilities": class_probabilities
     }
-
-if __name__ == "__main__":
-
-    # Example telemetry sample
-
-    sample_telemetry = {
-        "Destination Port": 21,
-        "Flow Duration": 100,
-        "Total Fwd Packets": 2,
-        "Total Backward Packets": 1,
-        "Total length of Fwd Packets": 40,
-        "Total length of Bwd Packets": 0,
-        "Flow Bytes/s": 400.0,
-        "Flow Packets/s": 20.0,
-        "is_zero_duration": 0
-    }
-
-    prediction = predict_telemetry(sample_telemetry)
-
-    print("\nPrediction Result")
-    print(prediction)
