@@ -11,10 +11,18 @@ import json
 import joblib
 import pandas as pd
 
+from datetime import datetime, UTC
+
 MODEL_PATH = Path("detection_engine/models/random_forest.joblib")
 SCALER_PATH = Path("detection_engine/models/scaler.joblib")
 LABEL_MAPPING_PATH = Path("detection_engine/data/processed/label_mapping.json")
 FEATURE_COLUMNS_PATH = Path("detection_engine/models/feature_columns.joblib")
+
+SEVERITY_MAPPING = {
+    "BENIGN": "LOW",
+    "FTP-PATATOR": "HIGH",
+    "SSH-PATATOR": "HIGH"
+}
 
 # Load trainer artifacts
 model = joblib.load(MODEL_PATH)
@@ -80,7 +88,11 @@ def predict_telemetry(telemetry_features):
     confidence_score = round(max(probabilities), 4)
 
     return {
-        "prediction": predicted_label,
+        "attack_type": predicted_label,
         "confidence": confidence_score,
+        "severity": SEVERITY_MAPPING[predicted_label],
+        "source_ip": telemetry_features.get("Source IP", "UNKNOWN"),
+        "destination_port": telemetry_features.get("Destination Port", "UNKNOWN"),
+        "timestamp": datetime.now(UTC).isoformat(),
         "probabilities": class_probabilities
     }
