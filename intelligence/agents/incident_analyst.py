@@ -6,6 +6,24 @@ def generate_incident_report(alert):
     Generates an analyst-style incident report.
     """
 
+    if alert["attack_type"] == "BENIGN":
+        return """
+        Traffic classified as BENIGN.
+
+        Summary:
+        No malicious activity was detected by the BlackTrace detection engine.
+
+        Assessment:
+        The observed network behavior matches normal traffic patterns.
+
+        Potential Impact:
+        None identified.
+
+        Recommended Investigation Steps:
+        - Continue routine monitoring
+        - No containment required
+        - No remediation required
+        """
     attack_type = alert["attack_type"]
     context = retrieve_context(f"{attack_type} attack profile")
 
