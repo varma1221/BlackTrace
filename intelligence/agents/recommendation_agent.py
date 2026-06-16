@@ -5,6 +5,18 @@ def generate_recommendation(alert):
     """
     Generates mitigation and response recommendations for detected attack
     """
+
+    if alert["attack_type"] == "BENIGN":
+        return """
+        Traffic classified as BENIGN.
+
+        Recommended Actions:
+        - Continue monitoring network activity
+        - Maintain existing security controls
+        - No containment required
+        - No recovery actions required
+        - No incident response escalation necessary
+        """
     attack_type = alert["attack_type"]
 
     context = retrieve_context(f"{attack_type} mitigation and response")

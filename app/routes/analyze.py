@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Dict, Union
 
 from detection_engine.inference import predict_telemetry
+from intelligence.workflow import intelligence_workflow
 
 router = APIRouter()
 
@@ -16,9 +17,16 @@ def analyze_telemetry(request: TelemetryRequest):
     Analyze incoming telemetry using BlackTrace ML inference pipeline.
     """
 
-    prediction_result = predict_telemetry(request.telemetry)
+    predict_result = predict_telemetry(request.telemetry)
+    intelligence_result = intelligence_workflow.invoke(
+        {
+            "alert": predict_result
+        }
+    )
 
     return {
         "status": "success",
-        "detection": prediction_result
+        "detection": predict_result,
+        "incident_report": intelligence_result["incident_report"],
+        "recommendations": intelligence_result["recommendations"]
     }
