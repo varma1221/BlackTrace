@@ -1,5 +1,7 @@
+import json
 from intelligence.llm import get_llm
 from intelligence.rag.retriever import retrieve_context
+from intelligence.prompts.recommendation_prompt import RECOMMENDATION_PROMPT
 
 def generate_recommendation(alert):
     """
@@ -7,37 +9,20 @@ def generate_recommendation(alert):
     """
 
     if alert["attack_type"] == "BENIGN":
-        return """
-        Traffic classified as BENIGN.
+        return {
+            "immediate_actions": "No action required.",
+            "containment": "No containment required.",
+            "recovery": "No recovery actions required.",
+            "long_term_mitigations": "Maintain existing monitoring and security controls."
+        }
 
-        Recommended Actions:
-        - Continue monitoring network activity
-        - Maintain existing security controls
-        - No containment required
-        - No recovery actions required
-        - No incident response escalation necessary
-        """
+        
     attack_type = alert["attack_type"]
 
     context = retrieve_context(f"{attack_type} mitigation and response")
 
     llm = get_llm()
 
-    prompt = f"""
-    You are a cybersecurity response advisor.
-
-    Attack Alert: {alert}
-    Retrieved Context: {context}
-
-    Generate:
-    1. Immediate Response Actions.
-    2. Containment Recommendations.
-    3. Recovery Actions.
-    4. Long-Term Mitigations
-
-    Keep recommendations practical and SOC-oriented.
-    """
-
+    prompt = RECOMMENDATION_PROMPT.format(alert=alert, context=context)
     response = llm.invoke(prompt)
-    return response.content
-
+    return json.loads(response.content)

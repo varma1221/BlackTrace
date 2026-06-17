@@ -27,6 +27,6 @@ def analyze_telemetry(request: TelemetryRequest):
     return {
         "status": "success",
         "detection": predict_result,
-        "incident_report": intelligence_result["incident_report"],
+        "incident_analysis": intelligence_result["incident_report"],
         "recommendations": intelligence_result["recommendations"]
     }
