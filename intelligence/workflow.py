@@ -5,8 +5,8 @@ from intelligence.agents.recommendation_agent import generate_recommendation
 
 class IntelligenceState(TypedDict):
     alert: dict
-    incident_report: str
-    recommendations: str
+    incident_report: dict
+    recommendations: dict
 
 def analyst_node(state):
     state["incident_report"] = generate_incident_report(state["alert"])

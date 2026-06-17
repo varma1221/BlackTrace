@@ -1,5 +1,7 @@
+import json
 from intelligence.llm import get_llm
 from intelligence.rag.retriever import retrieve_context
+from intelligence.prompts.incident_analysis_prompt import INCIDENT_ANALYSIS_PROMPT
 
 def generate_incident_report(alert):
     """
@@ -7,45 +9,20 @@ def generate_incident_report(alert):
     """
 
     if alert["attack_type"] == "BENIGN":
-        return """
-        Traffic classified as BENIGN.
+        return {
+            "attack_summary": "Traffic classified as BENIGN",
+            "mitre_mapping": "N/A",
+            "threat_explanation": "The observed network behavior matches normal traffic patterns.",
+            "potential_impact": "None identified.",
+            "investigation_steps": "Continue routine monitoring. No containment or remediation required."
+        }
 
-        Summary:
-        No malicious activity was detected by the BlackTrace detection engine.
-
-        Assessment:
-        The observed network behavior matches normal traffic patterns.
-
-        Potential Impact:
-        None identified.
-
-        Recommended Investigation Steps:
-        - Continue routine monitoring
-        - No containment required
-        - No remediation required
-        """
+        
     attack_type = alert["attack_type"]
     context = retrieve_context(f"{attack_type} attack profile")
 
     llm = get_llm()
-    prompt = f"""
-        You are a cybersecurity incident analyst.
-
-        Attack Alert: {alert}
-
-        Retrieved Cybersecurity Context: {context}
-
-        Generate a professional incident report containing:
-
-        1. Attack Summary
-        2. MITRE ATT&CK Mapping
-        3. Threat Explanation
-        4. Potential Impact
-        5. Recommended Investigation Steps
-        
-        Keep the report concise and SOC-oriented.
-        """
+    prompt = INCIDENT_ANALYSIS_PROMPT.format(alert=alert, context=context)
     
     response = llm.invoke(prompt)
-    return response.content
-
+    return json.loads(response.content)
