@@ -14,6 +14,7 @@ from app.routes.alerts import router as alerts_router
 from app.routes.metrics import router as metrics_router
 from app.routes.stream import router as stream_router
 from app.routes.analyze import router as analyze_router
+from app.routes.intelligence import router as intelligence_router
 from app.database.connection import engine
 from app.database.models import Base
 
@@ -48,4 +49,5 @@ app.include_router(alerts_router)
 app.include_router(metrics_router)
 app.include_router(stream_router)
 app.include_router(analyze_router)
+app.include_router(intelligence_router)
 Base.metadata.create_all(bind=engine)
