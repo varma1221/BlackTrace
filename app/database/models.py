@@ -4,7 +4,7 @@ SQLAlchemy ORM models for persistent storage.
 Defines the database schema for security alerts and other core entities
 within the BlackTrace ecosystem.
 """
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Text
 from datetime import datetime
 from app.database.connection import Base
 
@@ -58,3 +58,17 @@ class SecurityEvent(Base):
     message = Column(String, nullable=False)
     event_timestamp = Column(DateTime, nullable=False)
     ingestion_timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+class IntelligenceReport(Base):
+    """
+    Stores AI-Generated incident analysis and recommendations linked to a specific alert.
+    """
+
+    __tablename__ = "intelligence_reports"
+
+    report_id = Column(Integer, primary_key=True, index=True)
+    alert_id = Column(Text, nullable=False)
+    incident_analysis = Column(Text, nullable=False)
+    recommendations = Column(Text, nullable=False)
+
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
