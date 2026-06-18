@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -9,6 +10,7 @@ from detection_engine.inference import predict_telemetry
 from intelligence.workflow import intelligence_workflow
 from app.services.intelligence_service import save_intelligence_report
 from app.services.alert_manager import create_alert
+from app.services.websocket_manager import manager
 
 router = APIRouter()
 
@@ -34,6 +36,26 @@ async def analyze_telemetry(request: TelemetryRequest, db: Session = Depends(get
         {
             "alert": predict_result
         }
+    )
+
+    asyncio.create_task(
+        manager.broadcast(
+            {
+                "event": "incident_analysis",
+                "alert_id": alert.alert_id,
+                "data": intelligence_result["incident_report"]
+            }
+        )
+    )
+
+    asyncio.create_task(
+        manager.broadcast(
+            {
+                "event": "recommendations",
+                "alert_id": alert.alert_id,
+                "data": intelligence_result["recommendations"]
+            }
+        )
     )
 
     save_intelligence_report(
