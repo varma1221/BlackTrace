@@ -1,10 +1,23 @@
-# BlackTrace
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg) ![License](https://img.shields.io/badge/license-MIT-blue.svg) 
+<div align="center">
 
-**AI-Assisted SOC Intelligence Platform for Network Intrusion Analysis**
+<h1>BlackTrace</h1>
 
----
+<p>
+An autonomous cybersecurity intelligence and defense platform designed for real-time threat detection,
+behavioral analysis, incident response, and AI-driven security operations.
+</p>
 
-## Table of Contents
+<img
+    src="https://github.com/user-attachments/assets/cdca55c3-17a0-48f5-8c5d-3ad9741b0c48"
+    alt="BlackTrace Logo"
+    width="400"
+/>
+
+</div>
+
+
+## **Table of Contents**
 
 - [Project Overview](#project-overview)
 - [Scope and Design Philosophy](#scope-and-design-philosophy)
@@ -24,25 +37,25 @@
 
 ---
 
-## Project Overview
+## **Project Overview**
 
-BlackTrace is a Security Operations Center (SOC) intelligence platform that integrates unsupervised anomaly detection, supervised attack classification, and automated intelligence report generation over labeled network flow data. It is designed to demonstrate how a structured detection pipeline, backed by machine learning models trained on the CICIDS2017 dataset, can feed an intelligence workflow that produces actionable analyst output.
+BlackTrace is a [Security Operations Center (SOC)](https://en.wikipedia.org/wiki/Information_security_operations_center) intelligence platform that integrates unsupervised anomaly detection, supervised attack classification, and automated intelligence report generation over labeled network flow data. It is designed to demonstrate how a structured detection pipeline, backed by machine learning models trained on the [CICIDS2017 dataset](https://www.unb.ca/cic/datasets/ids-2017.html), can feed an intelligence workflow that produces actionable analyst output.
 
 In a conventional SOC, the analyst workflow involves three stages: detection, triage, and response. Detection surfaces events. Triage determines whether an event is a credible threat. Response coordinates remediation. BlackTrace covers the detection and triage stages by automating the generation of intelligence reports and ranked recommendations tied to each detected alert, with a real-time dashboard providing the analyst-facing interface.
 
 The problem BlackTrace addresses is not detection in isolation. Producing an alert is a solved problem in the research literature. The harder problem is what happens immediately after: what context is attached to the alert, how that context is structured for analyst consumption, and how the system assists the analyst in deciding whether to escalate. BlackTrace treats this post-detection workflow as a first-class design concern.
 
-The platform was built for two purposes. The first is engineering: to demonstrate the integration of multiple components — preprocessing, model inference, API serving, persistence, WebSocket streaming, and a dashboard — into a coherent system. The second is educational: to serve as a reference implementation for engineers and students studying applied machine learning in security contexts, particularly those working with the CICIDS2017 benchmark dataset.
+The platform was built for two purposes. The first is engineering: to demonstrate the integration of multiple components - preprocessing, model inference, API serving, persistence, WebSocket streaming, and a dashboard into a coherent system. The second is educational: to serve as a reference implementation for engineers and students studying applied machine learning in security contexts, particularly those working with the CICIDS2017 benchmark dataset.
 
 ---
 
-## Scope and Design Philosophy
+## **Scope and Design Philosophy**
 
-BlackTrace is an educational and engineering demonstration platform. It is not a production Security Information and Event Management (SIEM) system, and it does not claim feature parity with platforms such as Splunk, Elastic Security, or IBM QRadar.
+BlackTrace is an educational and engineering demonstration platform. It is not a production [Security Information and Event Management (SIEM) system](https://en.wikipedia.org/wiki/Security_information_and_event_management), and it does not claim feature parity with platforms such as Splunk, Elastic Security, or IBM QRadar.
 
 **Educational Purpose**
 
-The project is explicitly designed to be studied. Every component boundary is intentional. The preprocessing workflow is transparent and documented. The model selection decisions — Isolation Forest for unsupervised anomaly detection, Random Forest for supervised classification — are made with the CICIDS2017 benchmark in mind, not with the expectation that these models transfer cleanly to arbitrary enterprise environments. Engineering students working in security operations, data science, or applied ML should find this codebase useful as a structured reference rather than as production tooling.
+The project is explicitly designed to be studied. Every component boundary is intentional. The preprocessing workflow is transparent and documented. The model selection decisions Isolation Forest for unsupervised anomaly detection, Random Forest for supervised classification are made with the CICIDS2017 benchmark in mind, not with the expectation that these models transfer cleanly to arbitrary enterprise environments. Engineering students working in security operations, data science, or applied ML should find this codebase useful as a structured reference rather than as production tooling.
 
 **Engineering Focus**
 
@@ -58,9 +71,9 @@ The architecture is designed so that any single component can be replaced withou
 
 ---
 
-## System Architecture
+## **System Architecture**
 
-The following diagram represents the end-to-end data flow through the BlackTrace platform, from raw network flow input through to analyst-facing output.
+_The following diagram represents the end-to-end data flow through the BlackTrace platform, from raw network flow input through to analyst-facing output._
 
 ```mermaid
 flowchart TD
@@ -100,9 +113,9 @@ flowchart TD
 
 ---
 
-## High-Level Component Architecture
+## **High-Level Component Architecture**
 
-The following diagram shows how the major runtime components interact and where the system's primary data flows are established.
+_The following diagram shows how the major runtime components interact and where the system's primary data flows are established._
 
 ```mermaid
 graph LR
@@ -156,15 +169,15 @@ graph LR
 
 ---
 
-## Detection Pipeline
+## **Detection Pipeline**
 
-### CICIDS2017 Dataset
+### **CICIDS2017 Dataset**
 
-The detection pipeline is trained and evaluated on the [CICIDS2017 dataset](https://www.unb.ca/cic/datasets/ids-2017.html), produced by the Canadian Institute for Cybersecurity. CICIDS2017 contains labeled network flow records generated using [CICFlowMeter](https://github.com/ahlashkari/CICFlowMeter) from a controlled network environment. The dataset covers multiple attack categories including DoS, DDoS, Brute Force, Web Attacks, Infiltration, Bot, and Portscan traffic, alongside benign baseline flows.
+The detection pipeline is trained and evaluated on the [CICIDS2017 dataset](https://www.unb.ca/cic/datasets/ids-2017.html), produced by the [Canadian Institute for Cybersecurity](https://www.unb.ca/cic/). CICIDS2017 contains labeled network flow records generated using [CICFlowMeter](https://github.com/ahlashkari/CICFlowMeter) from a controlled network environment. The dataset covers multiple attack categories including DoS, DDoS, Brute Force, Web Attacks, Infiltration, Bot, and Portscan traffic, alongside benign baseline flows.
 
 Each flow record contains 78 features representing statistical properties of the network flow: byte counts, packet lengths, inter-arrival times, flag counts, and others. The label column identifies whether the flow is benign or belongs to a specific attack category.
 
-### Preprocessing Workflow
+### **Preprocessing Workflow**
 
 Raw CICIDS2017 CSV files require preprocessing before they are suitable for model training or inference. The preprocessing layer handles the following:
 
@@ -176,19 +189,19 @@ Raw CICIDS2017 CSV files require preprocessing before they are suitable for mode
 
 **Label encoding:** The string attack category labels are integer-encoded for supervised model training. The encoding scheme is documented in the project Wiki.
 
-### Anomaly Detection
+### **Anomaly Detection**
 
 Isolation Forest is applied to the preprocessed feature matrix without reference to labels. It constructs an ensemble of random isolation trees and scores each flow by the average path length required to isolate it. Flows that are isolated by shorter paths receive higher anomaly scores. The contamination parameter is set based on the known class imbalance in CICIDS2017.
 
 Isolation Forest is well-suited to this use case because it does not require labeled attack examples during training. It is sensitive to distributional outliers, which in network flow data often corresponds to attack traffic that differs statistically from the benign baseline.
 
-### Attack Classification
+### **Attack Classification**
 
 Random Forest is applied as a supervised classifier using the labeled CICIDS2017 records. The model is trained to distinguish between benign traffic and the attack categories present in the dataset. Classification output produces both a predicted label and a per-class probability vector, which is used in alert severity scoring.
 
 The combination of Isolation Forest (unsupervised) and Random Forest (supervised) is intentional. The anomaly detector surfaces traffic that deviates from the baseline without requiring a label. The classifier provides a specific attack category assignment for flows that cross the anomaly threshold. In practice, both signals are surfaced to the analyst rather than one overriding the other.
 
-### Detection Sequence
+### **Detection Sequence**
 
 ```mermaid
 sequenceDiagram
@@ -217,7 +230,7 @@ sequenceDiagram
 
 ---
 
-## Intelligence Workflow
+## **Intelligence Workflow**
 
 Each alert generated by the detection pipeline triggers an intelligence workflow. The intelligence engine enriches the raw alert with contextual information, produces a structured report, and hands off to the recommendation engine, which generates response guidance ranked by relevance and feasibility.
 
@@ -248,7 +261,7 @@ sequenceDiagram
 
 ---
 
-## Data Sources and Research References
+## **Data Sources and Research References**
 
 **Primary Dataset**
 
@@ -357,7 +370,7 @@ BlackTrace/
 
 ---
 
-## Intelligence Reports
+## **Intelligence Reports**
 
 Each alert produced by the detection pipeline is associated with an intelligence report generated by the intelligence engine. The report is a structured document that captures the following information:
 
@@ -373,7 +386,7 @@ Each alert produced by the detection pipeline is associated with an intelligence
 
 ---
 
-## Real-Time Event Streaming
+## **Real-Time Event Streaming**
 
 BlackTrace uses WebSockets to push events from the API layer to the Streamlit dashboard without requiring the dashboard to poll. This is relevant because alert volumes can spike rapidly during simulated attack scenarios, and polling introduces latency that degrades the analyst experience.
 
@@ -401,7 +414,7 @@ sequenceDiagram
 
 ---
 
-## Security Model
+## **Security Model**
 
 The BlackTrace API implements token-based authentication via API keys. All non-public endpoints require a valid API key passed in the `X-API-Key` request header. The authentication middleware validates the key against a configured value loaded from the environment at startup.
 
@@ -413,7 +426,7 @@ The BlackTrace API implements token-based authentication via API keys. All non-p
 
 ---
 
-## Known Limitations
+## **Known Limitations**
 
 These limitations are documented as an engineering retrospective rather than a disclaimer. Understanding them is necessary for any engineer who intends to extend the platform or evaluate its applicability to a different context.
 
@@ -433,7 +446,7 @@ These limitations are documented as an engineering retrospective rather than a d
 
 ---
 
-## Project Wiki
+## **Project Wiki**
 
 The [BlackTrace Wiki](https://github.com/varma1221/BlackTrace/wiki) contains implementation-level documentation that is intentionally kept separate from this README.
 
@@ -449,15 +462,13 @@ Engineers extending or studying the platform should treat the Wiki as the primar
 
 **Development history.** The Wiki tracks significant changes to the platform across development phases. This is useful for understanding why the current implementation looks the way it does and where it has diverged from the original design.
 
-If this README raises a question about implementation, the answer is likely in the Wiki. If it is not, that is a documentation gap worth filing as an issue.
+_If this README raises a question about implementation, the answer is likely in the Wiki. If it is not, that is a documentation gap worth filing as an issue._
 
 ---
 
-## Future Directions
+## **Future Directions**
 
 The following are realistic enhancements grounded in the current architecture. They are not commitments.
-
-**PostgreSQL migration.** Replacing SQLite with PostgreSQL would address the write contention limitations and enable concurrent deployments. The SQLAlchemy abstraction makes this straightforward at the ORM level; the migration would require environment configuration, schema migration testing, and connection pool tuning.
 
 **Live flow ingestion.** Integrating with Zeek or Suricata to consume live network flow records would allow BlackTrace to operate on current traffic rather than historical batch data. This requires a streaming inference pipeline rather than the current batch processor, and would involve significant changes to the detection engine interface.
 
