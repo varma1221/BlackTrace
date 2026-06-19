@@ -432,8 +432,6 @@ These limitations are documented as an engineering retrospective rather than a d
 
 **Educational scope.** BlackTrace is not a production system. It has not been evaluated against live network traffic, has not been subjected to adversarial evasion testing, and does not implement the full operational surface of a SIEM. Using it as the primary detection mechanism in any environment where detection failures have real consequences would be a design error.
 
-**SQLite limitations.** SQLite does not support concurrent writes without locking. Under alert volumes typical of even moderate network environments, write contention will degrade performance. The ORM layer is abstracted through SQLAlchemy, which means migration to PostgreSQL requires minimal code change, but that migration has not been tested end-to-end and is left as an exercise for engineers extending the platform.
-
 **CICIDS2017 dependency.** The detection models are trained exclusively on CICIDS2017 data generated in a controlled testbed environment. The network conditions, traffic patterns, and protocol distributions in CICIDS2017 do not match those of arbitrary enterprise environments. Models trained on this dataset should not be expected to generalize without retraining on environment-specific data.
 
 **Anomaly detection limitations.** Isolation Forest is sensitive to the contamination parameter. If the assumed contamination rate does not match the actual proportion of anomalous traffic in the input, the model will produce poorly calibrated scores. In CICIDS2017, the class distribution is known, which makes parameterization tractable. In real environments, it is not.
