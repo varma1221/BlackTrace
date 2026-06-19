@@ -25,4 +25,15 @@ def generate_recommendation(alert):
 
     prompt = RECOMMENDATION_PROMPT.format(alert=alert, context=context)
     response = llm.invoke(prompt)
-    return json.loads(response.content)
+    content = response.content.strip()
+
+    # Slice out everything between the outer curly braces
+    start = content.find('{')
+    end = content.rfind('}')
+
+    if start != -1 and end != -1:
+        json_str = content[start : end + 1]
+    else:
+        json_str = content
+
+    return json.loads(json_str)
