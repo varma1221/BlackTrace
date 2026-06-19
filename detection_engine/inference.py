@@ -90,7 +90,7 @@ def predict_telemetry(telemetry_features):
     return {
         "attack_type": predicted_label,
         "confidence": confidence_score,
-        "severity": SEVERITY_MAPPING[predicted_label],
+        "severity": SEVERITY_MAPPING.get(predicted_label.upper(), "LOW"),
         "source_ip": telemetry_features.get("Source IP", "UNKNOWN"),
         "destination_port": telemetry_features.get("Destination Port", "UNKNOWN"),
         "timestamp": datetime.now(UTC).isoformat(),

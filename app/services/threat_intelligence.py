@@ -18,13 +18,13 @@ def enrich_ip(source_ip: str):
         "185.220.101.1": {
            "country": "Germany",
            "isp": "TOR Exit Node",
-           "threat_source": 95,
+           "threat_score": 95,
            "known_malicious": True 
         },
         "91.240.118.12": {
             "country": "Russia",
             "isp": "Offshore Hosting Provider",
-            "threat_source": 88,
+            "threat_score": 88,
             "known_malicious": True
         }
     }

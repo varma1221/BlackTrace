@@ -9,11 +9,11 @@ Retrieved Cybersecurity Context:
 
 Return ONLY valid JSON:
 
-{
+{{
   "attack_summary": "",
   "mitre_mapping": "",
   "threat_explanation": "",
   "potential_impact": "",
   "investigation_steps": ""
-}
+}}
 """

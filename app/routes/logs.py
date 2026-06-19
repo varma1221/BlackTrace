@@ -9,15 +9,13 @@ from sqlalchemy.orm import Session
 from app.schemas.log_schema import SecurityLog
 from app.core.logging_config import logger
 from app.database.session import get_db
+from app.database.connection import SessionLocal
 from app.services.threat_analyzer import analyze_security_event
 from app.services.event_service import store_raw_security_event
 
 router = APIRouter()
 
-def process_security_event(
-    log,
-    db
-):
+async def process_security_event(log: SecurityLog):
     """
     Internal task for executing the threat analysis pipeline.
 
@@ -28,7 +26,8 @@ def process_security_event(
         log (SecurityLog): The validated security log payload.
         db (Session): Database session for alert persistence.
     """
-    analyze_security_event(log, db)
+    with SessionLocal() as db:
+        analyze_security_event(log, db)
 
 @router.post("/logs")
 def ingest_log(
@@ -56,11 +55,7 @@ def ingest_log(
     )
     
     store_raw_security_event(log, db)
-    background_tasks.add_task(
-        process_security_event,
-        log,
-        db
-    )
+    background_tasks.add_task(process_security_event, log)
     
     return {
         "status": "accepted",

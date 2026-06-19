@@ -9,10 +9,10 @@ Retrieved Context:
 
 Return ONLY valid JSON:
 
-{
+{{
   "immediate_actions": "",
   "containment": "",
   "recovery": "",
   "long_term_mitigations": ""
-}
+}}
 """

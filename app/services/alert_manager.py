@@ -48,26 +48,24 @@ def create_alert(threat_analysis, db: Session):
         f"(Alert ID: {alert.alert_id})"
     )
 
-    asyncio.create_task(
-        manager.broadcast(
-            {
-                "event": "new_alert",
-                "alert": {
-                    "alert_id": alert.alert_id,
-                    "threat_type": (
-                        alert.threat_type
-                    ),
-                    "severity": (
-                        alert.severity
-                    ),
-                    "source_ip": (
-                        alert.source_ip
-                    ),
-                    "status": alert.status
+    try:
+        loop = asyncio.get_running_loop()
+        asyncio.create_task(
+            manager.broadcast(
+                {
+                    "event": "new_alert",
+                    "alert": {
+                        "alert_id": alert.alert_id,
+                        "threat_type": (alert.threat_type),
+                        "severity": (alert.severity),
+                        "source_ip": (alert.source_ip),
+                        "status": alert.status
+                    }
                 }
-            }
+            )
         )
-    )
+    except RuntimeError:
+        pass
     
     return SecurityAlert(
         alert_id=alert.alert_id,
