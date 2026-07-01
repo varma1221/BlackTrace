@@ -60,15 +60,6 @@ The project is explicitly designed to be studied. Every component boundary is in
 **Engineering Focus**
 
 The architecture prioritizes clarity over performance optimization. Component responsibilities are separated to make the system easy to reason about. The detection engine does not know about the API layer. The intelligence engine does not know about the dashboard. Communication between layers flows through well-defined interfaces. This is deliberate: in an educational context, a system that is easy to understand is more valuable than one that is aggressively optimized.
-
-**Non-Production Limitations**
-
-SQLite is used as the persistence backend. This is adequate for demonstration purposes and removes the operational burden of managing a database server. It is not appropriate for concurrent write-heavy workloads or for deployments where the alert volume exceeds what SQLite can handle without locking. The security model implements API key authentication over the FastAPI layer but does not implement role-based access control, audit logging, or the full authentication surface expected of production security tooling. These are known gaps, documented explicitly in the Known Limitations section.
-
-**Architectural Goals**
-
-The architecture is designed so that any single component can be replaced without requiring changes to adjacent components. The SQLite backend can be replaced with PostgreSQL by changing the SQLAlchemy connection string and adjusting the session configuration. The Streamlit dashboard can be replaced with a React frontend by consuming the same FastAPI endpoints and WebSocket events. The detection models can be swapped for different estimators by conforming to the interface expected by the detection engine. These substitutions are the intended migration path toward production deployment.
-
 ---
 
 ## **System Architecture**
