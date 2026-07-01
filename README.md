@@ -60,6 +60,7 @@ The project is explicitly designed to be studied. Every component boundary is in
 **Engineering Focus**
 
 The architecture prioritizes clarity over performance optimization. Component responsibilities are separated to make the system easy to reason about. The detection engine does not know about the API layer. The intelligence engine does not know about the dashboard. Communication between layers flows through well-defined interfaces. This is deliberate: in an educational context, a system that is easy to understand is more valuable than one that is aggressively optimized.
+
 ---
 
 ## **System Architecture**
