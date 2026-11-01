@@ -29,12 +29,22 @@ LABEL_MAPPING_PATH = Path("detection_engine/data/processed/label_mapping.json")
 
 class DetectionService:
     def __init__(self):
-        self.iso_model = joblib.load(MODEL_DIR / "isolation_forest.joblib")
-        self.rf_model = joblib.load(MODEL_DIR / "random_forest.joblib")
-        self.scaler = joblib.load(MODEL_DIR / "scaler.joblib")
+        self.iso_model = None
+        self.rf_model = None
+        self.scaler = None
+        self.int_to_label = None
+
+    def _load_artifacts(self) -> None:
+        iso_model = joblib.load(MODEL_DIR / "isolation_forest.joblib")
+        rf_model = joblib.load(MODEL_DIR / "random_forest.joblib")
+        scaler = joblib.load(MODEL_DIR / "scaler.joblib")
 
         with open(LABEL_MAPPING_PATH) as f:
             label_mapping = json.load(f)
+
+        self.iso_model = iso_model
+        self.rf_model = rf_model
+        self.scaler = scaler
         self.int_to_label = {v: k for k, v in label_mapping.items()}
 
     def _to_model_row(self, flow: NetworkFlow) -> pd.DataFrame:
@@ -84,6 +94,9 @@ class DetectionService:
                 "class_probabilities": {str: float}  # full RF distribution
             }
         """
+        if self.iso_model is None:
+            self._load_artifacts()
+
         X = self._to_model_row(flow)
 
         # Stage 1: Isolation Forest (needs scaled input) 

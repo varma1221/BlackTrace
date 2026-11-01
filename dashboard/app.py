@@ -1,13 +1,15 @@
 import os
+from pathlib import Path
 
 import pandas as pd
 import requests
 import streamlit as st
 from dotenv import load_dotenv
 
-load_dotenv()
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(PROJECT_ROOT / ".env")
 
-API_BASE = "http://localhost:8000"
+API_BASE = "http://127.0.0.1:8000"
 BLACKTRACE_API_KEY = os.getenv("BLACKTRACE_API_KEY")
 
 HEADERS = {
@@ -89,7 +91,7 @@ logo_col, title_col = st.columns([1.2, 5])
 
 with logo_col:
     st.image(
-        "assets/Black_Trace.png",
+        Path(__file__).resolve().parent / "assets" / "Black_Trace.png",
         width=220
     )
 

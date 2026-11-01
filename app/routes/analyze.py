@@ -1,12 +1,11 @@
 import asyncio
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.database.session import get_db
 
 from typing import Dict, Union
 
-from detection_engine.inference import predict_telemetry
 from intelligence.workflow import intelligence_workflow
 from app.schemas.network_flow_schema import NetworkFlow
 from app.services.detection_service import detection_service
@@ -23,7 +22,16 @@ async def analyze_telemetry(flow: NetworkFlow, db: Session = Depends(get_db), ap
     Analyze incoming telemetry using BlackTrace ML inference pipeline.
     """
 
-    predict_result = detection_service.predict(flow)
+    try:
+        predict_result = detection_service.predict(flow)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Detection model artifacts are unavailable. Add the training "
+                "data and generate the model artifacts before analyzing telemetry."
+            ),
+        ) from exc
     threat_analysis = {
         "threat_type": predict_result["attack_type"],
         "source_ip": flow.source_ip,
