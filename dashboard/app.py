@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(PROJECT_ROOT / ".env")
 
-API_BASE = "http://127.0.0.1:8000"
+API_BASE = os.getenv("BLACKTRACE_API_URL", "http://127.0.0.1:8000").rstrip("/")
 BLACKTRACE_API_KEY = os.getenv("BLACKTRACE_API_KEY")
 
 HEADERS = {
@@ -31,6 +31,14 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+
+@st.cache_data(ttl=5)
+def api_is_available():
+    try:
+        return requests.get(API_BASE, timeout=2).ok
+    except requests.exceptions.RequestException:
+        return False
 
 
 @st.cache_data(ttl=15)
@@ -82,9 +90,18 @@ def get_severity_distribution():
     )
 
 
-alerts = get_alerts()
-metrics = get_metrics()
-severity_distribution = get_severity_distribution()
+if api_is_available():
+    alerts = get_alerts()
+    metrics = get_metrics()
+    severity_distribution = get_severity_distribution()
+else:
+    st.warning(
+        f"Cannot connect to the BlackTrace API at {API_BASE}. "
+        "Start the API with `uvicorn app.main:app --reload`, then refresh this page."
+    )
+    alerts = []
+    metrics = {}
+    severity_distribution = []
 
 
 logo_col, title_col = st.columns([1.2, 5])
